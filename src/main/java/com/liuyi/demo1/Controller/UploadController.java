@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -132,6 +133,59 @@ public class UploadController {
         skuSplitService.splitSku(pathname,targetPath);
 
         return "请查看"+folderName;
+    }
+
+    @RequestMapping("/testSplitExcel")
+    public String testSplitExcel(@RequestParam("file") MultipartFile file, @RequestParam("colum") String column) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        if (file.isEmpty()) {
+            return "文件为空";
+        }
+        // 获取文件名
+        String fileName = file.getOriginalFilename();
+        log.info("上传的文件名为：" + fileName);
+        // 获取文件的后缀名
+        String suffixName = fileName.substring(fileName.lastIndexOf("."));
+        log.info("文件的后缀名为：" + suffixName);
+        if(!type.contains(suffixName)){
+            return "上传的文件不是excel";
+        }
+        String excelPath = System.getProperty("user.dir")+"\\src\\main\\resources\\excel";
+        String folderPath = excelPath+"\\"+fileName.substring(0, fileName.lastIndexOf("."));
+        String resPath = folderPath + "\\res";
+
+        File folder = new File(folderPath);
+        if(!folder.exists()){
+            folder.mkdir();
+            File zipFolder = new File(resPath);
+            zipFolder.mkdir();
+        }else {
+            return "该文件名已存在，请更改文件名或查询已生成的文件！  文件地址："+folderPath;
+        }
+
+        InputStream inputStream = file.getInputStream();
+        List<List> splitExcels = splitExcelService.getSplitExcels(inputStream, column);
+
+        //column映射 由column拿到实例类中对应的属性名
+        HashMap<String, String> columnMap = new HashMap<>();
+        columnMap.put("平台名称","getPlatForm");
+        columnMap.put("大区","getRegion");
+        columnMap.put("城市","getCity");
+
+        for (List<ExcelData> excel:
+                splitExcels) {
+            Method method = ExcelData.class.getMethod(columnMap.get(column));
+            String res = (String)method.invoke(excel.get(0));
+            String path = resPath+"\\"+"group-"+res+".xlsx";
+            splitExcelService.write(path,excel);
+        }
+        //将结果打包成zip
+        FileOutputStream outputStream = new FileOutputStream(folderPath+"\\res.zip");
+        ZipUtil.toZip(resPath,outputStream,true);
+
+
+
+        return "请查看 "+folderPath;
+
     }
 
 

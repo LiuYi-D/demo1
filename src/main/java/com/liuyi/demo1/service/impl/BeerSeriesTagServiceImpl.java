@@ -8,6 +8,7 @@ import com.liuyi.demo1.service.BeerSeriesTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.PrimitiveIterator;
 
@@ -69,6 +70,71 @@ public class BeerSeriesTagServiceImpl implements BeerSeriesTagService {
 
     }
 
+    @Override
+    public String findTag(BeerSeriesTag beerSeriesTag) {
+        String brand = beerSeriesTag.getBrand();
+        String name = beerSeriesTag.getName();
+        String firstKeyword = beerSeriesTag.getFirstKeyword();
+        String secondKeyword = beerSeriesTag.getSecondKeyword();
+        String thirdKeyword = beerSeriesTag.getThirdKeyword();
+        String fourthKeyword = beerSeriesTag.getFourthKeyword();
+        String mappedValue = beerSeriesTag.getMappedValue();
+        String lastBrand = beerSeriesTag.getLastBrand();
+        String series = beerSeriesTag.getSeries();
+
+        //如果系列标签已经存在 抛异常
+        if(series != null){
+            throw new TagException(ErrorEnum.SERIES_EXIST);
+        }
+        //如果品牌为空 抛异常
+        if(brand == null){
+            throw new TagException(ErrorEnum.BRAND_NULL);
+        }
+        //如果果品牌值是其他，就返回其他
+        if(brand.equals("其他")){
+            return "其他";
+        }
+        //品牌不是其他  且映射值为空  抛异常
+        if(mappedValue == null){
+            throw new TagException(ErrorEnum.MAPPED_NULL);
+        }
+        //第一关键字不为空 匹配第一关键字
+        if(firstKeyword != null){
+            if(name.contains(firstKeyword)) {
+                return mappedValue;
+            }
+        }
+        // 第二三四关键字都不为空，则匹配二三四关键字
+
+        if(secondKeyword==null&&thirdKeyword==null&&fourthKeyword==null){
+            if(lastBrand == null){
+                throw new TagException(ErrorEnum.LAST_NULL);
+            }
+            return lastBrand+"其他";
+        }
+        HashSet<String> keywords = new HashSet<>();
+        if (secondKeyword!=null)keywords.add(secondKeyword);
+        if (thirdKeyword!=null)keywords.add(thirdKeyword);
+        if (fourthKeyword!=null)keywords.add(fourthKeyword);
+        for (String keyword:
+             keywords) {
+            if (!name.contains(keyword)){
+                if(lastBrand == null){
+                    throw new TagException(ErrorEnum.LAST_NULL);
+                }
+                return lastBrand+"其他";
+            }
+
+        }
+
+        return mappedValue;
+
+
+        //品牌不是其他  映射值不为空 关键字未匹配上  此时如果最终品牌值为空 抛异常 否则返回最终品牌+其他
+
+
+    }
+
     /**
      * 查询所有的商品信息
      * @return 所有商品信息
@@ -93,7 +159,8 @@ public class BeerSeriesTagServiceImpl implements BeerSeriesTagService {
         for (BeerSeriesTag beerSeriesTag:all) {
             try{
                 //获取标签
-                String seriesTag = findSingleBeerSeriesTag(beerSeriesTag);
+                String seriesTag = findTag(beerSeriesTag);
+                //String seriesTag = findSingleBeerSeriesTag(beerSeriesTag);
                 beerSeriesTagMapper.updateSeriesById(seriesTag,beerSeriesTag.getId());
                 System.out.println("更新成功，系列标签为 "+seriesTag+" "+beerSeriesTag.toString());
                 sum++;

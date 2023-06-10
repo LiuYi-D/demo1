@@ -24,13 +24,14 @@ public class BeerSeriesTagServiceImplTest {
     @Test
     void testFindSingleTag(){
         BeerSeriesTag beerSeriesTag = new BeerSeriesTag();
-        beerSeriesTag.setBrand("雪花");
-        beerSeriesTag.setName("**********SNOW雪花纯生啤酒8度500ml*12罐匠心营造易拉罐装整箱黄啤酒 500mL*12瓶");
-        beerSeriesTag.setFirstKeyword("8度");
+        beerSeriesTag.setBrand("迷失海岸");
+        beerSeriesTag.setName("迷失海岸美国进口精酿啤酒巧克力牛奶花生酱迷雾快艇幽灵浑浊IPA美国原装进口 17种口味可选 355ml 单瓶");
+        beerSeriesTag.setLastBrand("迷失海岸");
+        beerSeriesTag.setFirstKeyword("花生巧克力牛奶世涛");
+        beerSeriesTag.setSecondKeyword("花生");
+        beerSeriesTag.setThirdKeyword("巧克力");
+        beerSeriesTag.setFourthKeyword("牛奶");
         beerSeriesTag.setMappedValue("花生巧克力牛奶世涛");
-        beerSeriesTag.setSecondKeyword(null);
-        beerSeriesTag.setThirdKeyword(null);
-        beerSeriesTag.setLastBrand("雪花");
         System.out.println(beerSeriesTag);
         String tag = beerSeriesTagService.findSingleBeerSeriesTag(beerSeriesTag);
         System.out.println(tag);
@@ -44,6 +45,23 @@ public class BeerSeriesTagServiceImplTest {
     void testUpdateAll(){
         Integer sum = beerSeriesTagService.updateAll();
         System.out.println("执行成功了"+sum+"条");
+    }
+
+    @Test
+    void testFindTag(){
+
+        BeerSeriesTag beerSeriesTag = new BeerSeriesTag();
+        beerSeriesTag.setBrand("迷失海岸");
+        beerSeriesTag.setName("迷失海岸美国进口精酿啤酒巧克力牛奶花生酱迷雾快艇幽灵浑浊IPA美国原装进口 17种口味可选 355ml 单瓶");
+        beerSeriesTag.setLastBrand("迷失海岸");
+        beerSeriesTag.setFirstKeyword("花生巧克力牛奶世涛");
+        beerSeriesTag.setSecondKeyword("花生");
+        beerSeriesTag.setThirdKeyword("巧克力");
+        beerSeriesTag.setFourthKeyword("牛奶");
+        beerSeriesTag.setMappedValue("花生巧克力牛奶世涛");
+        System.out.println(beerSeriesTag);
+        String tag = beerSeriesTagService.findTag(beerSeriesTag);
+        System.out.println(tag);
     }
 
 }

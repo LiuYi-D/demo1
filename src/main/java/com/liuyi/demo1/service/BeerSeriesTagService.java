@@ -10,4 +10,5 @@ public interface BeerSeriesTagService {
     public String findSingleBeerSeriesTag(BeerSeriesTag beerSeriesTag);
     public Integer updateAll();
     public void setSeriesNull();
+    public String findTag(BeerSeriesTag beerSeriesTag);
 }

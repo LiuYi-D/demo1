@@ -51,7 +51,7 @@ public class LowestDiscountImpl implements LowestDiscountSevice {
     public Set<String> getDiscount(String information) {
 
         //正则匹配促销信息
-        Pattern pattern = Pattern.compile("满[1-9]\\d*\\.?\\d*减\\d*\\.?\\d*");
+        Pattern pattern = Pattern.compile("满[1-9]\\d*\\.?\\d*元?减\\d*\\.?\\d*");
         Matcher matcher = pattern.matcher(information);
 
         //存入Set

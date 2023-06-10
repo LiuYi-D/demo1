@@ -79,4 +79,11 @@ class Demo1ApplicationTests {
 
 	}
 
+	@Test
+	void testPath(){
+		String currentPath=System.getProperty("user.dir");
+		String excelPath = currentPath+"\\src\\main\\resource\\excel";
+		System.out.println(excelPath);
+	}
+
 }

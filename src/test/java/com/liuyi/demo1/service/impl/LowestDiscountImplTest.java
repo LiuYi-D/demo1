@@ -14,7 +14,7 @@ public class LowestDiscountImplTest {
 
     @Test
     void testGetDiscount(){
-        String information = "购买1-3件时享受单件价¥1969，超出数量以结算价为准,满399";
+        String information = "购买至少1件时可享受优惠,满2149元减130元";
         Set<String> informations = lowestDiscountSevice.getDiscount(information);
         System.out.println(informations);
     }
@@ -28,8 +28,8 @@ public class LowestDiscountImplTest {
 
     @Test
     void testGetLowest(){
-        float price = 1969.00f;
-        String information = "购买1-3件时享受单件价¥1969，超出数量以结算价为准,满399减10";
+        float price = 440f;
+        String information = "购买至少1件时可享受优惠\n";
         Float lowest = lowestDiscountSevice.getLowest(price, information);
         System.out.println(lowest);
     }
