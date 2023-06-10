@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.liuyi.demo1.mapper.BeerSeriesTagMapper">
+    <select id="findAll" resultType="BeerSeriesTag">
+        select * from beer_series_tag_demo;
+    </select>
+    <select id="findById" parameterType="Integer" resultType="BeerSeriesTag">
+        select * from beer_series_tag_demo where id = #{id};
+    </select>
+    <update id="updateSeriesById" parameterType="BeerSeriesTag">
+        UPDATE beer_series_tag_demo SET series = #{series} WHERE id = #{id};
+    </update>
+    <update id="setSeriesNull">
+        UPDATE beer_series_tag_demo SET series=NULL;
+    </update>
+</mapper>

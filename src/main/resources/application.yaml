@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:mysql://121.41.37.158:3306/test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: Dly123
+    driver-class-name: com.mysql.jdbc.Driver
+  servlet:
+    multipart:
+      enabled: true
+
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  type-aliases-package: com.liuyi.demo1.pojo
+
