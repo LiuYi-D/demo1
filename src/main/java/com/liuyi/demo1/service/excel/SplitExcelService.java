@@ -13,4 +13,6 @@ public interface SplitExcelService {
     public void write(String filepath, List<ExcelData> datas);
 
     public List<List> getSplitExcels(InputStream inputStream, String column) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
+
+    public List<List> testSplitByHead(InputStream inputStream, String column) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException;
 }

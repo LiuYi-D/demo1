@@ -8,6 +8,7 @@ import com.liuyi.demo1.service.excel.SkuSplitService;
 import com.liuyi.demo1.service.excel.SplitExcelService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -136,7 +135,7 @@ public class UploadController {
     }
 
     @RequestMapping("/testSplitExcel")
-    public String testSplitExcel(@RequestParam("file") MultipartFile file, @RequestParam("colum") String column) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public String testSplitExcel(@RequestParam("file") MultipartFile file, @RequestParam("colum") String column,HttpServletResponse response) throws IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (file.isEmpty()) {
             return "文件为空";
         }
@@ -154,16 +153,14 @@ public class UploadController {
         String resPath = folderPath + "\\res";
 
         File folder = new File(folderPath);
-        if(!folder.exists()){
-            folder.mkdir();
-            File zipFolder = new File(resPath);
-            zipFolder.mkdir();
-        }else {
-            return "该文件名已存在，请更改文件名或查询已生成的文件！  文件地址："+folderPath;
-        }
+        folder.mkdir();
+        File zipFolder = new File(resPath);
+        zipFolder.mkdir();
+
 
         InputStream inputStream = file.getInputStream();
-        List<List> splitExcels = splitExcelService.getSplitExcels(inputStream, column);
+        //List<List> splitExcels = splitExcelService.getSplitExcels(inputStream, column);
+        List<List> splitExcels = splitExcelService.testSplitByHead(inputStream, column);
 
         //column映射 由column拿到实例类中对应的属性名
         HashMap<String, String> columnMap = new HashMap<>();
@@ -181,11 +178,37 @@ public class UploadController {
         //将结果打包成zip
         FileOutputStream outputStream = new FileOutputStream(folderPath+"\\res.zip");
         ZipUtil.toZip(resPath,outputStream,true);
+        downZip(folderPath+"\\res.zip",response);
+        FileUtils.cleanDirectory(new File(excelPath));
+
+        return "成功";
+
+    }
 
 
+    public void downZip(String path,HttpServletResponse response){
+        try {
+            File file = new File(path);
+            String filename = file.getName();
+            FileInputStream fileInputStream = new FileInputStream(file);
+            InputStream fis = new BufferedInputStream(fileInputStream);
+            byte[] buffer = new byte[fis.available()];
+            fis.read(buffer);
+            fis.close();
 
-        return "请查看 "+folderPath;
-
+            response.reset();
+            // 设置response的Header
+            response.setCharacterEncoding("UTF-8");
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+            response.addHeader("Content-Length", "" + file.length());
+            OutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
+            response.setContentType("application/octet-stream");
+            response.setHeader("time-zone","GMT+8");
+            outputStream.write(buffer);
+            outputStream.flush();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
 

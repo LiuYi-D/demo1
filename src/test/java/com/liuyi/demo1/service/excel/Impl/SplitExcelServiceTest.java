@@ -1,12 +1,15 @@
 package com.liuyi.demo1.service.excel.Impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.liuyi.demo1.pojo.excel.ExcelData;
+import com.liuyi.demo1.pojo.excel.ExcelDataHeadListener;
 import com.liuyi.demo1.service.excel.SplitExcelService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,5 +42,24 @@ public class SplitExcelServiceTest {
         excelData.add(data4);
         splitExcelService.write(path,excelData);
 
+    }
+
+    @Test
+    public void testHead(){
+        String fileName = "F:\\test3.xlsx";
+        EasyExcel.read(fileName, ExcelData.class,new ExcelDataHeadListener()).sheet().doRead();
+    }
+
+    @Test
+    public void testFiled() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+//        Field[] fields = ExcelData.class.getDeclaredFields();
+//        System.out.println(fields[0]);
+
+//        String path = "F:\\test3.xlsx";
+//        File file = new File(path);
+//        String name = "大区";
+//        String name2 = "城市";
+//        List<List> splitExcels = splitExcelService.testSplitByHead(path,name2);
+//        System.out.println(splitExcels);
     }
 }
